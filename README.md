@@ -1,31 +1,70 @@
 # Immutable Backup Blueprints
-### Surviving Identity Provider (IdP) Compromise.
+### Authority-Separated Recovery Architecture
 
-> **Architecture Principle:** A backup is only valid if its restore path survives an Active Directory compromise.
+![Status](https://img.shields.io/badge/status-architecture--pattern-blue)
+
+> **Architecture Principle:** Immutability without authority separation is not resilience. A backup is only valid if its restore path survives an Active Directory compromise.
+
+---
 
 ## 📚 Canonical Architecture Reference  
-This repository contains the blast-radius models and recovery sequence frameworks.
+This repository contains the blast-radius models and recovery sequence frameworks for defending against identity plane compromises.
 
 **The continuously maintained architectural specification lives here:** 👉 [https://www.rack2cloud.com/data-protection-architecture-strategy-guide/](https://www.rack2cloud.com/data-protection-architecture-strategy-guide/)
 
 ---
 
-## What This Protects Against
-If your primary Identity Provider (e.g., AD, Entra ID) is compromised, attackers will move laterally to your backup control plane. 
+## Problem Statement
 
-This model prevents:
-* Backup policies being maliciously deleted.
-* Immutable flags being modified via compromised admin accounts.
-* Storage-level replication being poisoned.
+Most backup systems rely on production identity systems (e.g., Active Directory, Entra ID) for restore authorization. This creates a fatal circular dependency during compromise events. 
 
-## The Zero-Trust Vault Architecture
-To guarantee recovery, the architecture must separate the data plane from the management plane.
-
-| Component | Design Requirement |
-| :--- | :--- |
-| **Authentication** | Local vault accounts with physical MFA (YubiKey), completely decoupled from AD. |
-| **Network** | Air-gapped or logically isolated via strict pull-only firewall rules. |
-| **Storage** | Hardware-level immutability (WORM) that cannot be bypassed via the hypervisor. |
+If your primary Identity Provider (IdP) is compromised, attackers will move laterally to your backup control plane to maliciously delete policies, poison replication, or bypass immutable flags using stolen privileged accounts.
 
 ---
-**Star this repo to secure your recovery paths.** *Maintained by [Rack2Cloud](https://www.rack2cloud.com)*
+
+## System Model
+
+![Authority Separation Model](https://www.rack2cloud.com/wp-content/uploads/2026/02/diagram-authority-separation.jpg)
+
+**Components:**
+1. Production Domain (Compromised Zone)
+2. Backup Storage Plane (Zero-Trust Data Plane)
+3. Independent Recovery Authority (Isolated Control Plane)
+4. Offline Credential Chain (Break-Glass Access)
+
+---
+
+## Threat & Mitigation Model
+
+| Threat | Mitigation Strategy |
+| :--- | :--- |
+| **Ransomware / Wiper** | Hardware-level immutability (WORM) that cannot be bypassed via the hypervisor. |
+| **Privilege Escalation** | Independent restore auth (Local vault accounts with physical MFA, decoupled from AD). |
+| **Policy Deletion** | Out-of-band metadata and vault locking to prevent retention policy drift. |
+| **Replication Poisoning** | Authority isolation and logically air-gapped pull-only firewall rules. |
+
+---
+
+## Zero-Trust Architectural Requirements
+
+To guarantee recovery, the architecture must separate the data plane from the management plane:
+1. **Separate Identity Plane:** Backup administration accounts must reside in a dedicated, isolated domain or utilize local physical tokens (YubiKey).
+2. **Immutable Retention Enforcement:** Object-level retention policies must prevent deletion during defined windows, regardless of administrative intent.
+3. **Offline Recovery Path:** The ability to recover must not depend on the availability of production DNS, DHCP, or IdP services.
+
+---
+
+## Non-Goals
+
+- Vendor feature comparison
+- Storage benchmarking
+
+*This is a control-plane architecture model focused strictly on authority separation.*
+
+---
+
+## Support
+
+If this framework helped secure your recovery paths, please star the repository. 
+
+Architectural frameworks maintained by **[Rack2Cloud](https://www.rack2cloud.com)**.
