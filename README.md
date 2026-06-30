@@ -224,5 +224,9 @@ This repository is maintained against the Rack2Cloud [Canonical Architecture Spe
 
 ---
 
+## Support
+
+If this framework helped secure your recovery paths, please star the repository. 
+
 *Last updated: 06-30-2026*
 *Maintained by [Rack2Cloud](https://www.rack2cloud.com)*
