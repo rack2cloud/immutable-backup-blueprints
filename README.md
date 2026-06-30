@@ -228,4 +228,4 @@ This repository is maintained against the Rack2Cloud [Canonical Architecture Spe
 
 If this framework helped secure your recovery paths, please star the repository. 
 
-Architectural frameworks maintained by [Rack2Cloud](https://www.rack2cloud.com)*
+Architectural frameworks maintained by [Rack2Cloud](https://www.rack2cloud.com)
